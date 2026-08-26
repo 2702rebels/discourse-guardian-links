@@ -1,4 +1,4 @@
-name: Plugin Tests
+name: Discourse Plugin
 
 on:
   push:
@@ -7,10 +7,10 @@ on:
   pull_request:
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: discourse/plugin-ci-action@v1
-        with:
-          plugin-name: discourse-guardian-links
+  ci:
+    uses: discourse/.github/.github/workflows/discourse-plugin.yml@v1
+
+  ci-stable:
+    uses: discourse/.github/.github/workflows/discourse-plugin.yml@v1
+    with:
+      core_ref: stable
