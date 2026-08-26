@@ -1,0 +1,4 @@
+plugins:
+  guardian_links_enabled:
+    default: true
+    client: true

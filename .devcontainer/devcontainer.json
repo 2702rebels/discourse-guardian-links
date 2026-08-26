@@ -1,0 +1,16 @@
+{
+  "name": "Discourse Plugin Development",
+  "image": "discourse/discourse_dev:release",
+  "forwardPorts": [3000, 4200],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rebornix.Ruby",
+        "castwide.solargraph",
+        "emberjs.ember-languageserver",
+        "dbaeumer.vscode-eslint"
+      ]
+    }
+  },
+  "postCreateCommand": "echo 'Discourse Dev Environment Ready'"
+}

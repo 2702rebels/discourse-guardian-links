@@ -1,0 +1,9 @@
+en:
+  site_settings:
+    guardian_links_enabled: "Enable guardian and student relationship links plugin"
+  guardian_links:
+    admin_title: "Guardian Links"
+    errors:
+      parent_not_found: "Parent/Guardian user could not be found."
+      student_not_found: "Student user could not be found."
+      link_not_found: "Guardian link record was not found."

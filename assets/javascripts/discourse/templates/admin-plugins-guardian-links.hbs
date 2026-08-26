@@ -1,0 +1,72 @@
+<div class="guardian-links-admin">
+  <h2>{{i18n "js.guardian_links.title"}}</h2>
+  <p>{{i18n "js.guardian_links.description"}}</p>
+
+  <div class="guardian-links-form">
+    <Input
+      @value={{this.parentUsername}}
+      placeholder={{i18n "js.guardian_links.parent_placeholder"}}
+      class="parent-input"
+    />
+    <Input
+      @value={{this.studentUsername}}
+      placeholder={{i18n "js.guardian_links.student_placeholder"}}
+      class="student-input"
+    />
+    <DButton
+      @action={{this.createLink}}
+      @label="js.guardian_links.add_link"
+      @icon="plus"
+      @disabled={{this.isSaving}}
+      class="btn-primary"
+    />
+  </div>
+
+  <table class="guardian-links-table">
+    <thead>
+      <tr>
+        <th>{{i18n "js.guardian_links.parent_label"}}</th>
+        <th>{{i18n "js.guardian_links.student_label"}}</th>
+        <th>{{i18n "js.guardian_links.relationship_type"}}</th>
+        <th>{{i18n "js.guardian_links.actions_label"}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each this.links as |link|}}
+        <tr>
+          <td>
+            <div class="user-info-cell">
+              <strong>@{{link.parent.username}}</strong>
+              {{#if link.parent.name}}
+                <span>({{link.parent.name}})</span>
+              {{/if}}
+            </div>
+          </td>
+          <td>
+            <div class="user-info-cell">
+              <strong>@{{link.student.username}}</strong>
+              {{#if link.student.name}}
+                <span>({{link.student.name}})</span>
+              {{/if}}
+            </div>
+          </td>
+          <td>{{link.relationship_type}}</td>
+          <td>
+            <DButton
+              @action={{fn this.deleteLink link}}
+              @label="js.guardian_links.unlink_btn"
+              @icon="trash-alt"
+              class="btn-danger btn-small"
+            />
+          </td>
+        </tr>
+      {{else}}
+        <tr>
+          <td colspan="4" class="empty-state">
+            {{i18n "js.guardian_links.empty_state"}}
+          </td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>

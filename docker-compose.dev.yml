@@ -1,0 +1,13 @@
+services:
+  discourse:
+    image: discourse/discourse_dev:release
+    container_name: discourse_plugin_dev
+    ports:
+      - "3000:3000"
+      - "4200:4200"
+    environment:
+      - UNICORN_WORKERS=2
+      - RAILS_ENV=development
+    volumes:
+      - .:/var/www/discourse/plugins/discourse-guardian-links:cached
+    command: /bin/bash

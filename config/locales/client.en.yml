@@ -1,0 +1,23 @@
+en:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          guardian_links: "Guardian Links"
+  js:
+    guardian_links:
+      title: "Guardian & Student Relationships"
+      description: "Manage relationships between parents/guardians and students. Records are kept strictly internal for logistics."
+      add_link: "Link Guardian & Student"
+      parent_placeholder: "Enter parent username..."
+      student_placeholder: "Enter student username..."
+      relationship_type: "Relationship"
+      parent_label: "Parent / Guardian"
+      student_label: "Student"
+      created_at_label: "Linked On"
+      actions_label: "Actions"
+      unlink_btn: "Unlink"
+      empty_state: "No guardian-student links found."
+      success_created: "Successfully linked guardian to student."
+      success_deleted: "Successfully unlinked."
+      confirm_delete: "Are you sure you want to remove this guardian-student link?"

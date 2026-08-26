@@ -1,0 +1,44 @@
+.guardian-links-admin {
+  .guardian-links-form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 16px;
+    background: var(--secondary);
+    border: 1px solid var(--primary-low);
+    border-radius: 8px;
+
+    input {
+      margin-bottom: 0;
+    }
+  }
+
+  .guardian-links-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th, td {
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--primary-low);
+    }
+
+    th {
+      font-weight: bold;
+      background: var(--primary-very-low);
+    }
+
+    .user-info-cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+      }
+    }
+  }
+}
