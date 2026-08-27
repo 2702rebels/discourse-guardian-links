@@ -11,20 +11,23 @@ enabled_site_setting :guardian_links_enabled
 
 register_asset "stylesheets/guardian-links-admin.scss"
 
-after_initialize do
-  module ::GuardianLinks
-    PLUGIN_NAME = "discourse-guardian-links"
+module ::GuardianLinks
+  PLUGIN_NAME = "discourse-guardian-links"
 
-    class Engine < ::Rails::Engine
-      engine_name PLUGIN_NAME
-      isolate_namespace GuardianLinks
-    end
+  class Engine < ::Rails::Engine
+    engine_name PLUGIN_NAME
+    isolate_namespace GuardianLinks
   end
+end
 
+after_initialize do
   require_relative "app/models/guardian_link"
   require_relative "app/serializers/guardian_link_serializer"
   require_relative "app/controllers/guardian_links/guardian_links_controller"
-  require_relative "config/routes"
+
+  Discourse::Application.routes.append do
+    mount ::GuardianLinks::Engine, at: "/"
+  end
 
   add_admin_route "guardian_links.admin_title", "guardian-links"
 end
