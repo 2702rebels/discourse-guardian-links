@@ -4,6 +4,8 @@ class GuardianLink < ActiveRecord::Base
   belongs_to :parent, class_name: "User"
   belongs_to :student, class_name: "User"
 
+  attribute :relationship_type, :string, default: "parent"
+
   validates :parent_id, presence: true
   validates :student_id, presence: true
   validates :relationship_type, presence: true

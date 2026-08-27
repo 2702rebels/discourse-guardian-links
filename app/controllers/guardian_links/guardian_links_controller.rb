@@ -93,7 +93,8 @@ module GuardianLinks
       if id.present?
         User.find_by(id: id.to_i)
       elsif username.present?
-        User.find_by_username(username.to_s) || User.find_by("LOWER(username) = ?", username.to_s.downcase)
+        normalized = username.to_s.strip.downcase
+        User.find_by(username_lower: normalized) || User.find_by("LOWER(username) = ?", normalized)
       else
         nil
       end
