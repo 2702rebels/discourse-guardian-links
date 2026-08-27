@@ -22,10 +22,10 @@ RSpec.describe GuardianLinks::GuardianLinksController, type: :request do
       get "/admin/plugins/guardian-links.json"
       expect(response.status).to eq(200)
 
-      json = response.parsed_body
-      expect(json["guardian_links"].length).to eq(1)
-      expect(json["guardian_links"][0]["parent"]["username"]).to eq(parent.username)
-      expect(json["guardian_links"][0]["student"]["username"]).to eq(student.username)
+      json = response.parsed_body.with_indifferent_access
+      expect(json[:guardian_links].length).to eq(1)
+      expect(json[:guardian_links][0][:parent][:username]).to eq(parent.username)
+      expect(json[:guardian_links][0][:student][:username]).to eq(student.username)
     end
   end
 
@@ -40,8 +40,8 @@ RSpec.describe GuardianLinks::GuardianLinksController, type: :request do
       }
 
       expect(response.status).to eq(200)
-      json = response.parsed_body
-      expect(json["guardian_link"]["relationship_type"]).to eq("mother")
+      json = response.parsed_body.with_indifferent_access
+      expect(json[:guardian_link][:relationship_type]).to eq("mother")
       expect(GuardianLink.where(parent_id: parent.id, student_id: student.id).count).to eq(1)
     end
 

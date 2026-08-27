@@ -8,11 +8,11 @@ module GuardianLinks
       links = GuardianLink.includes(:parent, :student).order(created_at: :desc)
 
       if params[:parent_id].present?
-        links = links.where(parent_id: params[:parent_id])
+        links = links.where(parent_id: params[:parent_id].to_i)
       end
 
       if params[:student_id].present?
-        links = links.where(student_id: params[:student_id])
+        links = links.where(student_id: params[:student_id].to_i)
       end
 
       if params[:search].present?
@@ -55,7 +55,7 @@ module GuardianLinks
     end
 
     def destroy
-      link = GuardianLink.find_by(id: params[:id])
+      link = GuardianLink.find_by(id: params[:id].to_i)
 
       if link.nil?
         return render_json_error(I18n.t("guardian_links.errors.link_not_found"), status: 404)
@@ -69,9 +69,9 @@ module GuardianLinks
 
     def resolve_user(id, username)
       if id.present?
-        User.find_by(id: id)
+        User.find_by(id: id.to_i)
       elsif username.present?
-        User.find_by_username(username)
+        User.find_by("LOWER(username) = ?", username.to_s.downcase)
       else
         nil
       end

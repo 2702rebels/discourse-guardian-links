@@ -13,6 +13,10 @@ class GuardianLinkSerializer < ApplicationSerializer
     user_data(object.student)
   end
 
+  def relationship_type
+    object.relationship_type
+  end
+
   private
 
   def user_data(user)
