@@ -1,72 +1,115 @@
-<div class="guardian-links-admin">
-  <h2>{{i18n "js.guardian_links.title"}}</h2>
-  <p>{{i18n "js.guardian_links.description"}}</p>
-
-  <div class="guardian-links-form">
-    <Input
-      @value={{this.parentUsername}}
-      placeholder={{i18n "js.guardian_links.parent_placeholder"}}
-      class="parent-input"
-    />
-    <Input
-      @value={{this.studentUsername}}
-      placeholder={{i18n "js.guardian_links.student_placeholder"}}
-      class="student-input"
-    />
-    <DButton
-      @action={{this.createLink}}
-      @label="js.guardian_links.add_link"
-      @icon="plus"
-      @disabled={{this.isSaving}}
-      class="btn-primary"
-    />
+<div class="guardian-links-admin-container">
+  <div class="guardian-links-header">
+    <h2>{{i18n "guardian_links.admin_title"}}</h2>
+    <p class="description">{{i18n "guardian_links.admin_description"}}</p>
   </div>
 
-  <table class="guardian-links-table">
-    <thead>
-      <tr>
-        <th>{{i18n "js.guardian_links.parent_label"}}</th>
-        <th>{{i18n "js.guardian_links.student_label"}}</th>
-        <th>{{i18n "js.guardian_links.relationship_type"}}</th>
-        <th>{{i18n "js.guardian_links.actions_label"}}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {{#each this.links as |link|}}
-        <tr>
-          <td>
-            <div class="user-info-cell">
-              <strong>@{{link.parent.username}}</strong>
-              {{#if link.parent.name}}
-                <span>({{link.parent.name}})</span>
-              {{/if}}
-            </div>
-          </td>
-          <td>
-            <div class="user-info-cell">
-              <strong>@{{link.student.username}}</strong>
-              {{#if link.student.name}}
-                <span>({{link.student.name}})</span>
-              {{/if}}
-            </div>
-          </td>
-          <td>{{link.relationship_type}}</td>
-          <td>
-            <DButton
-              @action={{fn this.deleteLink link}}
-              @label="js.guardian_links.unlink_btn"
-              @icon="trash-alt"
-              class="btn-danger btn-small"
-            />
-          </td>
-        </tr>
-      {{else}}
-        <tr>
-          <td colspan="4" class="empty-state">
-            {{i18n "js.guardian_links.empty_state"}}
-          </td>
-        </tr>
-      {{/each}}
-    </tbody>
-  </table>
+  <div class="guardian-link-form-card">
+    <h3>{{i18n "guardian_links.add_link_title"}}</h3>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label>{{i18n "guardian_links.parent_username_label"}}</label>
+        <Input
+          @value={{this.parentUsername}}
+          placeholder="e.g. parent_jane"
+          class="input-large"
+        />
+      </div>
+
+      <div class="form-field">
+        <label>{{i18n "guardian_links.student_username_label"}}</label>
+        <Input
+          @value={{this.studentUsername}}
+          placeholder="e.g. student_alex"
+          class="input-large"
+        />
+      </div>
+
+      <div class="form-field">
+        <label>{{i18n "guardian_links.relationship_type_label"}}</label>
+        <select
+          value={{this.relationshipType}}
+          class="combobox"
+          {{on "change" (action (mut this.relationshipType) value="target.value")}}
+        >
+          <option value="parent">{{i18n "guardian_links.relationship_types.parent"}}</option>
+          <option value="mother">{{i18n "guardian_links.relationship_types.mother"}}</option>
+          <option value="father">{{i18n "guardian_links.relationship_types.father"}}</option>
+          <option value="guardian">{{i18n "guardian_links.relationship_types.guardian"}}</option>
+          <option value="other">{{i18n "guardian_links.relationship_types.other"}}</option>
+        </select>
+      </div>
+
+      <div class="form-actions">
+        <DButton
+          @action={{this.createLink}}
+          @label="guardian_links.add_button"
+          @icon="plus"
+          @disabled={{this.isSaving}}
+          class="btn-primary"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="guardian-links-table-card">
+    <h3>{{i18n "guardian_links.existing_links_title"}} ({{this.links.length}})</h3>
+
+    {{#if this.links.length}}
+      <table class="table grid guardian-links-table">
+        <thead>
+          <tr>
+            <th>{{i18n "guardian_links.parent_username_label"}}</th>
+            <th>{{i18n "guardian_links.student_username_label"}}</th>
+            <th>{{i18n "guardian_links.relationship_type_label"}}</th>
+            <th>{{i18n "guardian_links.created_at_label"}}</th>
+            <th>{{i18n "guardian_links.actions_label"}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each this.links as |link|}}
+            <tr>
+              <td>
+                <div class="user-info-cell">
+                  {{avatar link.parent imageSize="small"}}
+                  <strong>@{{link.parent.username}}</strong>
+                  {{#if link.parent.name}}
+                    <span class="user-name">({{link.parent.name}})</span>
+                  {{/if}}
+                </div>
+              </td>
+              <td>
+                <div class="user-info-cell">
+                  {{avatar link.student imageSize="small"}}
+                  <strong>@{{link.student.username}}</strong>
+                  {{#if link.student.name}}
+                    <span class="user-name">({{link.student.name}})</span>
+                  {{/if}}
+                </div>
+              </td>
+              <td>
+                <span class="badge-relationship">{{link.relationship_type}}</span>
+              </td>
+              <td>
+                {{format-date link.created_at leaveAgo="true"}}
+              </td>
+              <td>
+                <DButton
+                  @action={{fn this.deleteLink link}}
+                  @icon="trash-can"
+                  @title="guardian_links.delete_button"
+                  class="btn-danger btn-small"
+                />
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    {{else}}
+      <div class="empty-state">
+        <p>{{i18n "guardian_links.no_links_found"}}</p>
+      </div>
+    {{/if}}
+  </div>
 </div>

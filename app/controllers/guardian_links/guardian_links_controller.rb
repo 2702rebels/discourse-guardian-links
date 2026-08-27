@@ -16,14 +16,23 @@ module GuardianLinks
       end
 
       if params[:search].present?
-        term = "%#{params[:search].downcase}%"
+        sanitized = ActiveRecord::Base.sanitize_sql_like(params[:search].to_s.strip.downcase)
+        term = "%#{sanitized}%"
         links = links.joins("INNER JOIN users AS parents ON parents.id = guardian_links.parent_id")
                      .joins("INNER JOIN users AS students ON students.id = guardian_links.student_id")
-                     .where("LOWER(parents.username) LIKE :term OR LOWER(parents.name) LIKE :term OR LOWER(students.username) LIKE :term OR LOWER(students.name) LIKE :term", term: term)
+                     .where(
+                       "LOWER(parents.username) LIKE :term OR LOWER(parents.name) LIKE :term OR LOWER(students.username) LIKE :term OR LOWER(students.name) LIKE :term",
+                       term: term
+                     )
       end
 
+      limit = params[:limit].to_i.positive? ? [params[:limit].to_i, 200].min : 100
+      offset = params[:page].to_i.positive? ? (params[:page].to_i - 1) * limit : 0
+
+      links = links.limit(limit).offset(offset)
+
       render json: {
-        guardian_links: links.map { |link| format_link(link) }
+        guardian_links: serialize_data(links, GuardianLinkSerializer)
       }
     end
 
@@ -47,7 +56,7 @@ module GuardianLinks
 
       if link.save
         render json: {
-          guardian_link: format_link(link)
+          guardian_link: GuardianLinkSerializer.new(link, root: false).as_json
         }
       else
         render_json_error(link.errors.full_messages.join(", "), status: 422)
@@ -67,33 +76,11 @@ module GuardianLinks
 
     private
 
-    def format_link(link)
-      {
-        id: link.id,
-        parent_id: link.parent_id,
-        student_id: link.student_id,
-        relationship_type: link.relationship_type,
-        created_at: link.created_at,
-        parent: link.parent ? {
-          id: link.parent.id,
-          username: link.parent.username,
-          name: link.parent.name,
-          avatar_template: link.parent.avatar_template
-        } : nil,
-        student: link.student ? {
-          id: link.student.id,
-          username: link.student.username,
-          name: link.student.name,
-          avatar_template: link.student.avatar_template
-        } : nil
-      }
-    end
-
     def resolve_user(id, username)
       if id.present?
         User.find_by(id: id.to_i)
       elsif username.present?
-        normalized = username.to_s.strip.downcase
+        normalized = username.to_s.strip.sub(/\A@/, "").downcase
         User.find_by(username_lower: normalized) || User.find_by("LOWER(username) = ?", normalized)
       else
         nil

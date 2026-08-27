@@ -10,10 +10,10 @@ export default class AdminPluginsGuardianLinksRoute extends DiscourseRoute {
 
   setupController(controller, model) {
     super.setupController(controller, model);
-    controller.set("links", model);
-    controller.set("parentUsername", "");
-    controller.set("studentUsername", "");
-    controller.set("relationshipType", "parent");
-    controller.set("isSaving", false);
+    controller.links = Array.isArray(model) ? [...model] : [];
+    controller.parentUsername = "";
+    controller.studentUsername = "";
+    controller.relationshipType = "parent";
+    controller.isSaving = false;
   }
 }

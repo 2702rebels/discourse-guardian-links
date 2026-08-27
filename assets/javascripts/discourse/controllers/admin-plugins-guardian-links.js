@@ -1,17 +1,24 @@
 import Controller from "@ember/controller";
 import { action } from "@ember/object";
+import { tracked } from "@glimmer/tracking";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import I18n from "discourse-i18n";
 
 export default class AdminPluginsGuardianLinksController extends Controller {
+  @tracked links = [];
+  @tracked parentUsername = "";
+  @tracked studentUsername = "";
+  @tracked relationshipType = "parent";
+  @tracked isSaving = false;
+
   @action
   async createLink() {
     if (!this.parentUsername || !this.studentUsername) {
       return;
     }
 
-    this.set("isSaving", true);
+    this.isSaving = true;
     try {
       const response = await ajax("/admin/plugins/guardian-links/links.json", {
         type: "POST",
@@ -23,14 +30,14 @@ export default class AdminPluginsGuardianLinksController extends Controller {
       });
 
       if (response && response.guardian_link) {
-        this.links.unshiftObject(response.guardian_link);
-        this.set("parentUsername", "");
-        this.set("studentUsername", "");
+        this.links = [response.guardian_link, ...this.links];
+        this.parentUsername = "";
+        this.studentUsername = "";
       }
     } catch (e) {
       popupAjaxError(e);
     } finally {
-      this.set("isSaving", false);
+      this.isSaving = false;
     }
   }
 
@@ -44,7 +51,7 @@ export default class AdminPluginsGuardianLinksController extends Controller {
       await ajax(`/admin/plugins/guardian-links/links/${link.id}.json`, {
         type: "DELETE",
       });
-      this.links.removeObject(link);
+      this.links = this.links.filter((l) => l.id !== link.id);
     } catch (e) {
       popupAjaxError(e);
     }
