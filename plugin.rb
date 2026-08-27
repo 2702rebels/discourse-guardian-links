@@ -23,19 +23,8 @@ after_initialize do
 
   require_relative "app/models/guardian_link"
   require_relative "app/serializers/guardian_link_serializer"
-  require_relative "app/controllers/guardian_links/admin/guardian_links_controller"
-
-  GuardianLinks::Engine.routes.draw do
-    scope "/admin/plugins/guardian-links", as: "admin_guardian_links" do
-      get "/" => "admin/guardian_links#index"
-      post "/" => "admin/guardian_links#create"
-      delete "/:id" => "admin/guardian_links#destroy"
-    end
-  end
-
-  Discourse::Application.routes.append do
-    mount ::GuardianLinks::Engine, at: "/"
-  end
+  require_relative "app/controllers/guardian_links/guardian_links_controller"
+  require_relative "config/routes"
 
   add_admin_route "guardian_links.admin_title", "guardian-links"
 end
