@@ -13,7 +13,7 @@ export default class AdminPluginsGuardianLinksController extends Controller {
 
     this.set("isSaving", true);
     try {
-      const response = await ajax("/admin/plugins/guardian-links.json", {
+      const response = await ajax("/admin/plugins/guardian-links/links.json", {
         type: "POST",
         data: {
           parent_username: this.parentUsername,
@@ -41,7 +41,7 @@ export default class AdminPluginsGuardianLinksController extends Controller {
     }
 
     try {
-      await ajax(`/admin/plugins/guardian-links/${link.id}.json`, {
+      await ajax(`/admin/plugins/guardian-links/links/${link.id}.json`, {
         type: "DELETE",
       });
       this.links.removeObject(link);

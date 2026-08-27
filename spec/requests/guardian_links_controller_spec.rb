@@ -8,10 +8,12 @@ RSpec.describe GuardianLinks::GuardianLinksController, type: :request do
   fab!(:parent) { Fabricate(:user) }
   fab!(:student) { Fabricate(:user) }
 
+  before { SiteSetting.guardian_links_enabled = true }
+
   describe "#index" do
     it "denies access to non-admin users" do
       sign_in(user)
-      get "/admin/plugins/guardian-links.json"
+      get "/admin/plugins/guardian-links/links.json"
       expect(response.status).to eq(403).or eq(404)
     end
 
@@ -19,10 +21,10 @@ RSpec.describe GuardianLinks::GuardianLinksController, type: :request do
       sign_in(admin)
       GuardianLink.create!(parent: parent, student: student, relationship_type: "parent")
 
-      get "/admin/plugins/guardian-links.json"
+      get "/admin/plugins/guardian-links/links.json"
       expect(response.status).to eq(200)
 
-      json = JSON.parse(response.body)
+      json = response.parsed_body
       expect(json["guardian_links"].length).to eq(1)
       expect(json["guardian_links"][0]["parent"]["username"]).to eq(parent.username)
       expect(json["guardian_links"][0]["student"]["username"]).to eq(student.username)
@@ -33,14 +35,14 @@ RSpec.describe GuardianLinks::GuardianLinksController, type: :request do
     it "creates a link using usernames" do
       sign_in(admin)
 
-      post "/admin/plugins/guardian-links.json", params: {
+      post "/admin/plugins/guardian-links/links.json", params: {
         parent_username: parent.username,
         student_username: student.username,
         relationship_type: "mother"
       }
 
       expect(response.status).to eq(200)
-      json = JSON.parse(response.body)
+      json = response.parsed_body
       expect(json["guardian_link"]["relationship_type"]).to eq("mother")
       expect(GuardianLink.where(parent_id: parent.id, student_id: student.id).count).to eq(1)
     end
@@ -48,7 +50,7 @@ RSpec.describe GuardianLinks::GuardianLinksController, type: :request do
     it "returns 404 if parent user does not exist" do
       sign_in(admin)
 
-      post "/admin/plugins/guardian-links.json", params: {
+      post "/admin/plugins/guardian-links/links.json", params: {
         parent_username: "non_existent_user",
         student_username: student.username
       }
@@ -62,7 +64,7 @@ RSpec.describe GuardianLinks::GuardianLinksController, type: :request do
       sign_in(admin)
       link = GuardianLink.create!(parent: parent, student: student, relationship_type: "parent")
 
-      delete "/admin/plugins/guardian-links/#{link.id}.json"
+      delete "/admin/plugins/guardian-links/links/#{link.id}.json"
       expect(response.status).to eq(200)
       expect(GuardianLink.find_by(id: link.id)).to be_nil
     end

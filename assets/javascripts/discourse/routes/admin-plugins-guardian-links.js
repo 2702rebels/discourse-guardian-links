@@ -3,7 +3,7 @@ import { ajax } from "discourse/lib/ajax";
 
 export default class AdminPluginsGuardianLinksRoute extends DiscourseRoute {
   model() {
-    return ajax("/admin/plugins/guardian-links.json").then((result) => {
+    return ajax("/admin/plugins/guardian-links/links.json").then((result) => {
       return result.guardian_links || [];
     });
   }
