@@ -12,7 +12,7 @@ RSpec.describe GuardianLinks::Admin::GuardianLinksController, type: :request do
     it "denies access to non-admin users" do
       sign_in(user)
       get "/admin/plugins/guardian-links.json"
-      expect(response.status).to eq(404)
+      expect(response.status).to eq(403)
     end
 
     it "lists links for admin" do

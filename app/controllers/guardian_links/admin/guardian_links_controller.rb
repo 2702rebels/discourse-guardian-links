@@ -23,7 +23,9 @@ module GuardianLinks
                        .where("LOWER(parents.username) LIKE :term OR LOWER(parents.name) LIKE :term OR LOWER(students.username) LIKE :term OR LOWER(students.name) LIKE :term", term: term)
         end
 
-        render_serialized(links, GuardianLinkSerializer, root: "guardian_links")
+        render json: {
+          guardian_links: serialize_data(links, GuardianLinkSerializer)
+        }
       end
 
       def create
@@ -45,7 +47,9 @@ module GuardianLinks
         )
 
         if link.save
-          render_serialized(link, GuardianLinkSerializer, root: "guardian_link")
+          render json: {
+            guardian_link: serialize_data(link, GuardianLinkSerializer)
+          }
         else
           render_json_error(link.errors.full_messages.join(", "), status: 422)
         end

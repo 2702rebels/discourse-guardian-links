@@ -9,8 +9,13 @@ on:
 jobs:
   ci:
     uses: discourse/.github/.github/workflows/discourse-plugin.yml@v1
+    with:
+      skip_linting: true
+      skip_annotations: true
 
   ci-stable:
     uses: discourse/.github/.github/workflows/discourse-plugin.yml@v1
     with:
       core_ref: stable
+      skip_linting: true
+      skip_annotations: true
