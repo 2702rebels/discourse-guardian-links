@@ -23,7 +23,7 @@ module GuardianLinks
       end
 
       render json: {
-        guardian_links: serialize_data(links, GuardianLinkSerializer)
+        guardian_links: links.map { |link| format_link(link) }
       }
     end
 
@@ -47,7 +47,7 @@ module GuardianLinks
 
       if link.save
         render json: {
-          guardian_link: serialize_data(link, GuardianLinkSerializer)
+          guardian_link: format_link(link)
         }
       else
         render_json_error(link.errors.full_messages.join(", "), status: 422)
@@ -67,11 +67,33 @@ module GuardianLinks
 
     private
 
+    def format_link(link)
+      {
+        id: link.id,
+        parent_id: link.parent_id,
+        student_id: link.student_id,
+        relationship_type: link.relationship_type,
+        created_at: link.created_at,
+        parent: link.parent ? {
+          id: link.parent.id,
+          username: link.parent.username,
+          name: link.parent.name,
+          avatar_template: link.parent.avatar_template
+        } : nil,
+        student: link.student ? {
+          id: link.student.id,
+          username: link.student.username,
+          name: link.student.name,
+          avatar_template: link.student.avatar_template
+        } : nil
+      }
+    end
+
     def resolve_user(id, username)
       if id.present?
         User.find_by(id: id.to_i)
       elsif username.present?
-        User.find_by("LOWER(username) = ?", username.to_s.downcase)
+        User.find_by_username(username.to_s) || User.find_by("LOWER(username) = ?", username.to_s.downcase)
       else
         nil
       end
