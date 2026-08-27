@@ -60,7 +60,7 @@ All endpoints require Discourse Staff authentication (session cookie) or an Admi
 
 ### 1. List / Search Links
 ```http
-GET /admin/plugins/guardian-links.json
+GET /admin/plugins/guardian-links/links.json
 ```
 
 **Query Parameters:**
@@ -101,7 +101,7 @@ GET /admin/plugins/guardian-links.json
 
 ### 2. Create Guardian Link
 ```http
-POST /admin/plugins/guardian-links.json
+POST /admin/plugins/guardian-links/links.json
 Content-Type: application/json
 ```
 
@@ -144,7 +144,7 @@ Content-Type: application/json
 
 ### 3. Remove / Unlink
 ```http
-DELETE /admin/plugins/guardian-links/:id.json
+DELETE /admin/plugins/guardian-links/links/:id.json
 ```
 
 **Sample Response (`200 OK`):**
@@ -169,7 +169,7 @@ const DISCOURSE_API_USERNAME = process.env.DISCOURSE_API_USERNAME || 'system';
 
 export async function fetchStudentGuardians(studentId: number) {
   const response = await fetchWithRateLimit(
-    `${DISCOURSE_URL}/admin/plugins/guardian-links.json?student_id=${studentId}`,
+    `${DISCOURSE_URL}/admin/plugins/guardian-links/links.json?student_id=${studentId}`,
     {
       headers: {
         'Api-Key': DISCOURSE_API_KEY,
