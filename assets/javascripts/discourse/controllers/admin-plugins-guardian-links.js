@@ -13,6 +13,11 @@ export default class AdminPluginsGuardianLinksController extends Controller {
   @tracked isSaving = false;
 
   @action
+  changeRelationshipType(event) {
+    this.relationshipType = event.target.value;
+  }
+
+  @action
   async createLink() {
     if (!this.parentUsername || !this.studentUsername) {
       return;

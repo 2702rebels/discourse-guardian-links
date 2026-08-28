@@ -31,7 +31,7 @@
         <select
           value={{this.relationshipType}}
           class="combobox"
-          {{on "change" (action (mut this.relationshipType) value="target.value")}}
+          {{on "change" this.changeRelationshipType}}
         >
           <option value="parent">{{i18n "guardian_links.relationship_types.parent"}}</option>
           <option value="mother">{{i18n "guardian_links.relationship_types.mother"}}</option>
