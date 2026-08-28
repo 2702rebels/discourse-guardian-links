@@ -1,8 +1,9 @@
 # Discourse Guardian Links (`discourse-guardian-links`)
 
 [![Discourse Plugin Tests](https://github.com/2702rebels/discourse-guardian-links/actions/workflows/test.yml/badge.svg)](https://github.com/2702rebels/discourse-guardian-links/actions/workflows/test.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A lightweight Discourse plugin designed for youth robotics teams (FRC 2702 Rebels) and organizations to track relational **Parent/Guardian <-> Student** links. 
+A lightweight Discourse plugin designed for youth robotics teams, schools, and youth organizations to track relational **Parent/Guardian <-> Student** links.
 
 It keeps Discourse as the authoritative system of record with PostgreSQL foreign key integrity while keeping relationship metadata **strictly backend/admin-only (100% invisible on public user profiles)**.
 
@@ -13,11 +14,12 @@ It keeps Discourse as the authoritative system of record with PostgreSQL foreign
 1. [Features](#features)
 2. [Database Architecture](#database-architecture)
 3. [REST API Documentation](#rest-api-documentation)
-4. [External Integration (Team Hub / Node.js)](#external-integration-team-hub--nodejs)
+4. [External Integration (Node.js / Dashboards)](#external-integration-nodejs--dashboards)
 5. [Discourse Native Admin UI](#discourse-native-admin-ui)
 6. [Local Development & Testing](#local-development--testing)
-7. [Production Deployment (`ls1`)](#production-deployment-ls1)
+7. [Production Deployment](#production-deployment)
 8. [Rollback & Safety](#rollback--safety)
+9. [License](#license)
 
 ---
 
@@ -27,7 +29,7 @@ It keeps Discourse as the authoritative system of record with PostgreSQL foreign
 - **Zero Profile Exposure**: Does not register or serialize custom user fields onto public profile cards or serializer pipelines. Only accessible to Discourse staff/admins.
 - **Bi-Directional Querying**: Query all students for a parent, all parents for a student, or search across both by username or display name.
 - **Native Admin Interface**: Built-in Ember.js admin view at `/admin/plugins/guardian-links`.
-- **Admin REST API**: Exposes JSON endpoints protected by Discourse API keys for external dashboards (like Team Hub).
+- **Admin REST API**: Exposes JSON endpoints protected by Discourse API keys for external dashboards and portals.
 
 ---
 
@@ -69,6 +71,8 @@ GET /admin/plugins/guardian-links/links.json
 | `parent_id` | `integer` (optional) | Filter links for a specific parent user ID |
 | `student_id` | `integer` (optional) | Filter links for a specific student user ID |
 | `search` | `string` (optional) | Substring search across usernames and display names |
+| `limit` | `integer` (optional) | Number of records per page (default: 100, max: 200) |
+| `page` | `integer` (optional) | Page number (default: 1) |
 
 **Sample Response (`200 OK`):**
 ```json
@@ -84,13 +88,13 @@ GET /admin/plugins/guardian-links/links.json
         "id": 45,
         "username": "jane_doe",
         "name": "Jane Doe",
-        "avatar_template": "/user_avatar/discourse.2702rebels.com/jane_doe/{size}/12_2.png"
+        "avatar_template": "/user_avatar/discourse.example.com/jane_doe/{size}/12_2.png"
       },
       "student": {
         "id": 102,
         "username": "alex_doe",
         "name": "Alex Doe",
-        "avatar_template": "/user_avatar/discourse.2702rebels.com/alex_doe/{size}/45_2.png"
+        "avatar_template": "/user_avatar/discourse.example.com/alex_doe/{size}/45_2.png"
       }
     }
   ]
@@ -156,19 +160,17 @@ DELETE /admin/plugins/guardian-links/links/:id.json
 
 ---
 
-## External Integration (Team Hub / Node.js)
+## External Integration (Node.js / Dashboards)
 
-To query or mutate relationships from an external Node.js service (e.g. `team-hub` tRPC router):
+To query or mutate relationships from an external backend service (e.g. Node.js / TypeScript):
 
 ```typescript
-import { fetchWithRateLimit } from './services/http/fetchWithRateLimit';
-
-const DISCOURSE_URL = process.env.DISCOURSE_URL || 'https://discourse.2702rebels.com';
+const DISCOURSE_URL = process.env.DISCOURSE_URL || 'https://discourse.example.com';
 const DISCOURSE_API_KEY = process.env.DISCOURSE_API_KEY!;
 const DISCOURSE_API_USERNAME = process.env.DISCOURSE_API_USERNAME || 'system';
 
 export async function fetchStudentGuardians(studentId: number) {
-  const response = await fetchWithRateLimit(
+  const response = await fetch(
     `${DISCOURSE_URL}/admin/plugins/guardian-links/links.json?student_id=${studentId}`,
     {
       headers: {
@@ -221,17 +223,17 @@ bundle exec rake plugin:spec["discourse-guardian-links"]
 
 The test suite covers:
 - `spec/models/guardian_link_spec.rb`: Foreign key cascading, self-link prevention, uniqueness checks.
-- `spec/requests/guardian_links_controller_spec.rb`: Admin authorization gates, search filters, serialization.
+- `spec/requests/guardian_links_controller_spec.rb`: Admin authorization gates, search filters, pagination, serialization.
 
 ---
 
-## Production Deployment (`ls1`)
+## Production Deployment
 
-To deploy this plugin to your self-hosted Discourse instance on `ls1`:
+To deploy this plugin to your self-hosted Discourse instance:
 
-1. SSH into the server:
+1. SSH into your Discourse host:
    ```bash
-   ssh ls1
+   ssh your-discourse-server
    ```
 2. Edit `/var/discourse/containers/app.yml`:
    ```bash
@@ -244,8 +246,6 @@ To deploy this plugin to your self-hosted Discourse instance on `ls1`:
        - exec:
            cd: "$home/plugins"
            cmd:
-             - git clone https://github.com/discourse/docker_manager.git
-             - git clone https://github.com/paviliondev/discourse-events.git
              - git clone https://github.com/2702rebels/discourse-guardian-links.git
    ```
 4. Rebuild the Discourse container:
@@ -263,3 +263,9 @@ To deploy this plugin to your self-hosted Discourse instance on `ls1`:
 2. **Uninstalling**:
    - Remove `- git clone https://github.com/2702rebels/discourse-guardian-links.git` from `/var/discourse/containers/app.yml`.
    - Run `sudo ./launcher rebuild app`.
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
