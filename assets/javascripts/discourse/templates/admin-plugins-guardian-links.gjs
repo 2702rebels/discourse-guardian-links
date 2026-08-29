@@ -1,0 +1,128 @@
+import { fn } from "@ember/helper";
+import { on } from "@ember/modifier";
+import Input from "@ember/component/input";
+import RouteTemplate from "ember-route-template";
+import DButton from "discourse/components/d-button";
+import avatar from "discourse/helpers/avatar";
+import formatDate from "discourse/helpers/format-date";
+import { i18n } from "discourse-i18n";
+
+export default RouteTemplate(
+  <template>
+    <div class="guardian-links-admin-container">
+      <div class="guardian-links-header">
+        <h2>{{i18n "guardian_links.admin_title"}}</h2>
+        <p class="description">{{i18n "guardian_links.admin_description"}}</p>
+      </div>
+
+      <div class="guardian-link-form-card">
+        <h3>{{i18n "guardian_links.add_link_title"}}</h3>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label>{{i18n "guardian_links.parent_username_label"}}</label>
+            <Input
+              @value={{@controller.parentUsername}}
+              placeholder="e.g. parent_jane"
+              class="input-large"
+            />
+          </div>
+
+          <div class="form-field">
+            <label>{{i18n "guardian_links.student_username_label"}}</label>
+            <Input
+              @value={{@controller.studentUsername}}
+              placeholder="e.g. student_alex"
+              class="input-large"
+            />
+          </div>
+
+          <div class="form-field">
+            <label>{{i18n "guardian_links.relationship_type_label"}}</label>
+            <select
+              value={{@controller.relationshipType}}
+              class="combobox"
+              {{on "change" @controller.changeRelationshipType}}
+            >
+              <option value="parent">{{i18n "guardian_links.relationship_types.parent"}}</option>
+              <option value="mother">{{i18n "guardian_links.relationship_types.mother"}}</option>
+              <option value="father">{{i18n "guardian_links.relationship_types.father"}}</option>
+              <option value="guardian">{{i18n "guardian_links.relationship_types.guardian"}}</option>
+              <option value="other">{{i18n "guardian_links.relationship_types.other"}}</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <DButton
+              @action={{@controller.createLink}}
+              @label="guardian_links.add_button"
+              @icon="plus"
+              @disabled={{@controller.isSaving}}
+              class="btn-primary"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="guardian-links-table-card">
+        <h3>{{i18n "guardian_links.existing_links_title"}} ({{@controller.links.length}})</h3>
+
+        {{#if @controller.links.length}}
+          <table class="table grid guardian-links-table">
+            <thead>
+              <tr>
+                <th>{{i18n "guardian_links.parent_username_label"}}</th>
+                <th>{{i18n "guardian_links.student_username_label"}}</th>
+                <th>{{i18n "guardian_links.relationship_type_label"}}</th>
+                <th>{{i18n "guardian_links.created_at_label"}}</th>
+                <th>{{i18n "guardian_links.actions_label"}}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each @controller.links as |link|}}
+                <tr>
+                  <td>
+                    <div class="user-info-cell">
+                      {{avatar link.parent imageSize="small"}}
+                      <strong>@{{link.parent.username}}</strong>
+                      {{#if link.parent.name}}
+                        <span class="user-name">({{link.parent.name}})</span>
+                      {{/if}}
+                    </div>
+                  </td>
+                  <td>
+                    <div class="user-info-cell">
+                      {{avatar link.student imageSize="small"}}
+                      <strong>@{{link.student.username}}</strong>
+                      {{#if link.student.name}}
+                        <span class="user-name">({{link.student.name}})</span>
+                      {{/if}}
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge-relationship">{{link.relationship_type}}</span>
+                  </td>
+                  <td>
+                    {{formatDate link.created_at leaveAgo="true"}}
+                  </td>
+                  <td>
+                    <DButton
+                      @action={{fn @controller.deleteLink link}}
+                      @icon="trash-can"
+                      @title="guardian_links.delete_button"
+                      class="btn-danger btn-small"
+                    />
+                  </td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        {{else}}
+          <div class="empty-state">
+            <p>{{i18n "guardian_links.no_links_found"}}</p>
+          </div>
+        {{/if}}
+      </div>
+    </div>
+  </template>
+);
