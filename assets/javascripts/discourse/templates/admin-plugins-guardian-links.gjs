@@ -1,6 +1,6 @@
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
-import Input from "@ember/component/input";
+import { Input } from "@ember/component";
 import RouteTemplate from "ember-route-template";
 import DButton from "discourse/components/d-button";
 import avatar from "discourse/helpers/avatar";
